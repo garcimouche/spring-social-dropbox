@@ -3,6 +3,9 @@ package org.springframework.social.dropbox.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+
+import org.springframework.http.MediaType;
 
 /**
  * Dropbox File Details
@@ -33,6 +36,11 @@ public class DropboxFile implements Serializable {
 
 	public InputStream getInputStream() {
 		return inputStream;
+	}
+	
+	
+	public Charset getCharset(){
+	    return MediaType.parseMediaType(this.contentType).getCharSet();
 	}
 	
 	public byte[] getBytes() throws IOException {

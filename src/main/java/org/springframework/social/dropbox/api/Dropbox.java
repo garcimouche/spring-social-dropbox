@@ -21,9 +21,10 @@ public interface Dropbox {
      * Get Metadata For a File or Directory
      * 
      * @param path
+     * @param hash
      * @return Metadata
      */
-    Metadata getItemMetadata(String path);
+    Metadata getItemMetadata(String path, String hash);
     
     /**
      * Restore a file to a revision

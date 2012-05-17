@@ -97,4 +97,14 @@ public class Metadata implements Serializable {
 	public List<Metadata> getContents() {
 		return contents;
 	}
+
+    @Override
+    public String toString() {
+        return "Metadata [size=" + size + ", bytes=" + bytes + ", isDir=" + isDir + ", isDeleted=" + isDeleted + ", rev=" + rev
+                + ", hash=" + hash + ", thumbExists=" + thumbExists + ", icon=" + icon + ", modified=" + modified + ", root="
+                + root + ", path=" + path + ", mimeType=" + mimeType + ", contents=" + contents + "]";
+    }
+	
+	
+	
 }

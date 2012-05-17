@@ -18,6 +18,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -44,8 +45,8 @@ public class DropboxTemplate extends AbstractOAuth1ApiBinding implements Dropbox
         return getRestTemplate().getForObject(ACCOUNT_INFO_URL, DropboxUserProfile.class);
     }
 
-    public Metadata getItemMetadata(String path) {
-        return getRestTemplate().getForObject(METADATA_URL, Metadata.class, appFolderUrl, path); 
+    public Metadata getItemMetadata(String path,String hash) {
+        return getRestTemplate().getForObject(METADATA_URL + "?hash="+hash, Metadata.class, appFolderUrl, path); 
     }
     
     public Metadata restore(String path, String rev) {
@@ -126,14 +127,22 @@ public class DropboxTemplate extends AbstractOAuth1ApiBinding implements Dropbox
     	UriTemplate uriTemplate = new UriTemplate(FILE_URL);
 		URI uri = uriTemplate.expand(appFolderUrl, path);
     	ClientHttpResponse response = getRestTemplate().getRequestFactory().createRequest(uri, HttpMethod.GET).execute();
-    	HttpHeaders headers = response.getHeaders();
+        ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+        if (errorHandler.hasError(response)) {
+                errorHandler.handleError(response);
+                return null;
+        }
+        else {
+            HttpHeaders headers = response.getHeaders();
+            return new DropboxFile(
+                            headers.getContentType().toString(), 
+                            headers.getContentLength(),
+                            response.getBody());
+            }
+        }
     	
-    	return new DropboxFile(
-    			headers.getContentType().toString(), 
-    			headers.getContentLength(),
-    			response.getBody());
-    	}
-    	catch (Exception e) {
+    	
+    	catch (IOException e) {
     		throw new RuntimeException(e);
     	}
     }
@@ -165,7 +174,7 @@ public class DropboxTemplate extends AbstractOAuth1ApiBinding implements Dropbox
 	    		return objectMapper.readValue(stream, Metadata.class);
 	    	}
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
     }
