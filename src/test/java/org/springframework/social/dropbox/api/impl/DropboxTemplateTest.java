@@ -283,9 +283,9 @@ public class DropboxTemplateTest extends AbstractDropboxApiTest {
     
     @Test
 	public void getMetadata() throws Exception {
-		mockServer.expect(requestTo(DropboxTemplate.METADATA_URL.replaceFirst("\\{appFolderUrl\\}", "dropbox").replaceFirst("\\{path\\}", ""))).andExpect(method(GET))
+		mockServer.expect(requestTo(DropboxTemplate.METADATA_URL.replaceFirst("\\{appFolderUrl\\}", "dropbox").replaceFirst("\\{path\\}", "path")+ "?hash")).andExpect(method(GET))
 		.andRespond(withResponse(jsonResource("/metadata"), responseHeaders));
-		Metadata metadata = dropbox.getItemMetadata("","");
+		Metadata metadata = dropbox.getItemMetadata("path","");
 		
 		assertEquals("0881bfe7f09e0fe856cf9a27000ac00c", metadata.getHash());
 		assertEquals(false, metadata.isThumbExists());
